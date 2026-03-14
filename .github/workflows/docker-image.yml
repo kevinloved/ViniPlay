@@ -1,12 +1,23 @@
-version: "3.8"
+version: '3'
+
 services:
   viniplay:
     image: ardovini/viniplay:latest
     container_name: viniplay
+    restart: unless-stopped
     ports:
       - "8998:8998"
-    restart: unless-stopped
     volumes:
-      - ./viniplay-data:/data
-    env_file:
-      - ./.env
+      - ./data:/data
+      - /etc/localtime:/etc/localtime:ro # 增加时区同步，避免日志时间错乱
+    environment:
+      - SESSION_SECRET=q1w2e3r4t5y6u7i8o9p0 # 请替换为更复杂的密钥
+      - TZ=Asia/Shanghai # 设置时区为中国上海
+    # 建议增加网络模式或安全选项
+    networks:
+      - viniplay_net
+
+# 定义自定义网络，便于管理
+networks:
+  viniplay_net:
+    driver: bridge
